@@ -1,4 +1,6 @@
+import 'package:chat_app/screen/auth_screen.dart';
 import 'package:chat_app/screen/chat_screen.dart';
+import 'package:chat_app/widgets/auth/auth_form.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
@@ -17,6 +19,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'chat_app',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -27,9 +30,17 @@ class MyApp extends StatelessWidget {
         // or simply save your changes to "hot reload" in a Flutter IDE).
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
-        primarySwatch: Colors.blue,
+        colorScheme:
+            ColorScheme.fromSwatch(primarySwatch: Colors.purple).copyWith(
+          background: Colors.purple,
+          secondary: Colors.orange,
+        ),
+        buttonTheme: ButtonTheme.of(context).copyWith(
+            buttonColor: Colors.purple,
+            textTheme: ButtonTextTheme.primary,
+            shape: const RoundedRectangleBorder()),
       ),
-      home: const ChatScreen(),
+      home: const AuthScreen(),
     );
   }
 }
