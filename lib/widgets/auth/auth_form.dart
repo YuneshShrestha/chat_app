@@ -59,7 +59,9 @@ class _AuthFormState extends State<AuthForm> {
                 // mainAxisSize is set to min so that it can take as minimum value as needed and not to take the whle space
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  CustomImagePicker(imagePickingFunction: imagePickingFunction),
+                  if (!isLogin)
+                    CustomImagePicker(
+                        imagePickingFunction: imagePickingFunction),
                   TextFormField(
                     key: const ValueKey('emailKey'),
                     validator: (value) {
