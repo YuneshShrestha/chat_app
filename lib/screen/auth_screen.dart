@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
@@ -17,7 +20,7 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   Widget build(BuildContext context) {
     void onSubmit(String userName, String password, String email, bool isLogin,
-        BuildContext ctx) async {
+        File image, BuildContext ctx) async {
       UserCredential authResult;
       setState(() {
         isLoading = true;
@@ -27,13 +30,29 @@ class _AuthScreenState extends State<AuthScreen> {
           authResult = await _auth.createUserWithEmailAndPassword(
               email: email, password: password);
 
-          // Stroing email and username
-          FirebaseFirestore.instance
+          //  String image to firebase storage
+          // ref() means we are using bucket and child means folder and file inside bucket
+
+          // ref creates pointer to path
+          final ref = FirebaseStorage.instance
+              .ref()
+              .child('user_image')
+              .child('${authResult.user!.uid}.jpg');
+
+          // putFile puts the file at that path and generates the file name as authResult.user!.uid.jpg
+          await ref.putFile(image);
+
+          // Get the download URL for the uploaded file
+          final url = await ref.getDownloadURL();
+
+          // After complete, store email, username, and imageUrl in Firestore
+          await FirebaseFirestore.instance
               .collection('users')
               .doc(authResult.user!.uid)
               .set({
             'userName': userName,
             'email': email,
+            'imageUrl': url,
           });
         } else {
           authResult = await _auth.signInWithEmailAndPassword(

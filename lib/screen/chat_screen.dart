@@ -1,5 +1,6 @@
+import 'package:chat_app/widgets/chats/messages.dart';
+import 'package:chat_app/widgets/chats/new_messages.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class ChatScreen extends StatelessWidget {
@@ -37,35 +38,22 @@ class ChatScreen extends StatelessWidget {
               })
         ],
       ),
-      body: StreamBuilder(
-          stream: FirebaseFirestore.instance
-              .collection('chats/W5tjXCzVcn9cNKVPrcw2/messages')
-              .snapshots(),
-          builder: (ctx, streamSnapShot) {
-            if (streamSnapShot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-            final docs = streamSnapShot.data!.docs;
-            return ListView.builder(
-              itemCount: docs.length,
-              itemBuilder: (ctx, index) {
-                return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(docs[index]['text']),
-                );
-              },
-            );
-          }),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          FirebaseFirestore.instance
-              .collection('chats/W5tjXCzVcn9cNKVPrcw2/messages')
-              .add({'text': "Hello I am the new one."});
-        },
-        child: const Icon(Icons.add),
+      body: Column(
+        children: [
+          const Expanded(
+            child: Messages(),
+          ),
+          NewMessages(),
+        ],
       ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {
+      //     FirebaseFirestore.instance
+      //         .collection('chats/W5tjXCzVcn9cNKVPrcw2/messages')
+      //         .add({'text': "Hello I am the new one."});
+      //   },
+      //   child: const Icon(Icons.add),
+      // ),
     );
   }
 }
