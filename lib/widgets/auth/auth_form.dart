@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 class AuthForm extends StatefulWidget {
   final bool isLoading;
   final void Function(String userName, String password, String email,
-      bool isLogin, File image, BuildContext ctx) submitFunction;
+      bool isLogin, File? image, BuildContext ctx) submitFunction;
   const AuthForm(
       {super.key, required this.submitFunction, required this.isLoading});
 
@@ -35,7 +35,7 @@ class _AuthFormState extends State<AuthForm> {
     if (isValidated) {
       _key.currentState!.save();
       widget.submitFunction(userName.trim(), password.trim(), email.trim(),
-          isLogin, _pickedImage!, ctx);
+          isLogin, _pickedImage, ctx);
     }
   }
 

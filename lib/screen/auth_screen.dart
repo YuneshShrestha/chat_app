@@ -20,7 +20,7 @@ class _AuthScreenState extends State<AuthScreen> {
   @override
   Widget build(BuildContext context) {
     void onSubmit(String userName, String password, String email, bool isLogin,
-        File image, BuildContext ctx) async {
+        File? image, BuildContext ctx) async {
       UserCredential authResult;
       setState(() {
         isLoading = true;
@@ -40,7 +40,7 @@ class _AuthScreenState extends State<AuthScreen> {
               .child('${authResult.user!.uid}.jpg');
 
           // putFile puts the file at that path and generates the file name as authResult.user!.uid.jpg
-          await ref.putFile(image);
+          await ref.putFile(image!);
 
           // Get the download URL for the uploaded file
           final url = await ref.getDownloadURL();

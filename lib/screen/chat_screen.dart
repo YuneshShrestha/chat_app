@@ -4,46 +4,53 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class ChatScreen extends StatelessWidget {
-  const ChatScreen({super.key});
+  const ChatScreen({
+    super.key,
+    required this.userId1,
+    required this.userName1,
+    required this.userImage1,
+    required this.userId2,
+    required this.userName2,
+    required this.userImage2, required this.docPath,
+  });
+  final String docPath;
+
+  final String userId1;
+
+  final String userName1;
+  final String userImage1;
+
+  final String userId2;
+
+  final String userName2;
+  final String userImage2;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("ChatApp"),
-        actions: [
-          DropdownButton(
-              icon: Icon(Icons.more_vert,
-                  color: Theme.of(context).primaryIconTheme.color),
-              items: [
-                DropdownMenuItem(
-                  value: 'logout',
-                  child: SizedBox(
-                    child: Row(
-                      children: const [
-                        Icon(Icons.exit_to_app),
-                        SizedBox(
-                          width: 6.0,
-                        ),
-                        Text("LogOut"),
-                      ],
-                    ),
-                  ),
-                )
-              ],
-              onChanged: (itemIdentifier) {
-                if (itemIdentifier == "logout") {
-                  FirebaseAuth.instance.signOut();
-                }
-              })
-        ],
+        title: Text(userId1 == FirebaseAuth.instance.currentUser!.uid
+            ? userName2
+            : userName1),
       ),
       body: Column(
         children: [
-          const Expanded(
-            child: Messages(),
+          Expanded(
+            child: Messages(
+              userId1: userId1,
+              userId2: FirebaseAuth.instance.currentUser!.uid,
+              docPath: docPath,
+            ),
           ),
-          NewMessages(),
+          NewMessages(
+            userID1: userId1,
+            userName1: userName1,
+            userImage1: userImage1,
+            userID2: FirebaseAuth.instance.currentUser!.uid,
+            userName2: userName2,
+            userImage2: userImage2,
+            // receiverImage:
+          ),
         ],
       ),
       // floatingActionButton: FloatingActionButton(

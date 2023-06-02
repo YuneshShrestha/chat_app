@@ -1,7 +1,10 @@
 import 'package:chat_app/screen/auth_screen.dart';
+import 'package:chat_app/screen/chat_list.dart';
 import 'package:chat_app/screen/chat_screen.dart';
+import 'package:chat_app/screen/users_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 
 Future<void> main() async {
@@ -13,10 +16,29 @@ Future<void> main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+//     final FirebaseMessaging messaging = FirebaseMessaging.instance;
+// // Set up notification callbacks
+//     messaging.setForegroundNotificationPresentationOptions(
+//       alert: true,
+//       badge: true,
+//       sound: true,
+//     );
+
+//     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+//       print(
+//           'Received a message in the foreground: ${message.notification?.body}');
+//       // Handle the received message
+//     });
+
+//     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+//       print(
+//           'User tapped on a notification in the foreground: ${message.notification?.body}');
+//       // Handle the tapped message
+//     });
+
     return MaterialApp(
       title: 'chat_app',
       debugShowCheckedModeBanner: false,
@@ -44,7 +66,7 @@ class MyApp extends StatelessWidget {
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (ctx, userSnapshot) {
           if (userSnapshot.hasData) {
-            return const ChatScreen();
+            return const ChatList();
           }
           return const AuthScreen();
         },

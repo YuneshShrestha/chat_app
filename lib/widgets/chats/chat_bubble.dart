@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 class ChatBubble extends StatelessWidget {
   const ChatBubble(
       {required this.message,
-      required this.userName,
-      required this.userImage,
       required this.isMe,
-      super.key});
+      super.key,
+      required this.senderImage,
+      required this.senderName});
   final String message;
-  final String userName;
-  final String userImage;
+  final String senderImage;
+  final String senderName;
 
   final bool isMe;
 
@@ -24,7 +24,8 @@ class ChatBubble extends StatelessWidget {
         children: [
           if (!isMe)
             CircleAvatar(
-              backgroundImage: NetworkImage(userImage),
+              radius: 20,
+              backgroundImage: NetworkImage(senderImage),
             ),
           Container(
             decoration: BoxDecoration(
@@ -55,11 +56,10 @@ class ChatBubble extends StatelessWidget {
               vertical: 10.0,
             ),
             child: Column(
-              crossAxisAlignment:
-                  !isMe ? CrossAxisAlignment.start : CrossAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  userName,
+                  senderName,
                   style: TextStyle(
                     color: isMe
                         ? Colors.white
