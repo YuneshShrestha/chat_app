@@ -34,25 +34,25 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final chatsCollection = FirebaseFirestore.instance.collection('chats');
 
-  Future<void> updateIsSeen(
-      String senderName, String senderImage, String senderID) async {
-    final doc = chatsCollection.doc(widget.docPath);
-    final docData = await doc.get();
-    final recentMessageUserID = docData['recentSentBy'];
-    if (recentMessageUserID != FirebaseAuth.instance.currentUser!.uid) {
-      await chatsCollection.doc(widget.docPath).update({
-        'recentIsSeen': true,
-      });
-    }
-  }
+  // Future<void> updateIsSeen(
+  //     String senderName, String senderImage, String senderID) async {
+  //   final doc = chatsCollection.doc(widget.docPath);
+  //   final docData = await doc.get();
+  //   final recentMessageUserID = docData['recentSentBy'];
+  //   if (recentMessageUserID != FirebaseAuth.instance.currentUser!.uid) {
+  //     await chatsCollection.doc(widget.docPath).update({
+  //       'recentIsSeen': true,
+  //     });
+  //   }
+  // }
 
-  @override
-  void initState() {
-    super.initState();
-    if (widget.docPath.isNotEmpty) {
-      updateIsSeen(widget.userName1, widget.userImage1, widget.userId1);
-    }
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   if (widget.docPath.isNotEmpty) {
+  //     updateIsSeen(widget.userName1, widget.userImage1, widget.userId1);
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {

@@ -37,69 +37,88 @@ class _NewMessagesState extends State<NewMessages> {
   @override
   void initState() {
     super.initState();
-    checkIfPresent();
+    try {
+      checkIfPresent().then((value) {
+        setState(() {
+          isPresent = value[1];
+          docPath = value[0];
+        });
+      });
+    } catch (error) {
+      print('Error: $error');
+    }
   }
 
-  void checkIfPresent() async {
+  Future<List<dynamic>> checkIfPresent() async {
     snapshot = await chatsCollection.get();
     users = snapshot!.docs.map((doc) => doc['usersID']).toList();
-    for (var user in users!) {
-      if (user.contains(widget.userID1) && user.contains(widget.userID2)) {
-        docPath = snapshot!.docs[users!.indexOf(user)].id;
-        isPresent = true;
+    if (snapshot!.docs.isEmpty || users!.isEmpty) {
+      for (var user in users!) {
+        if (user.contains(widget.userID1) && user.contains(widget.userID2)) {
+          return [snapshot!.docs[users!.indexOf(user)].id, true];
+        }
       }
     }
+    return ['', false];
   }
 
   Future<void> pushMessage(
       String senderName, String senderImage, String senderID) async {
     if (!isPresent) {
-      await chatsCollection
-          .add({
-            'timestamp': Timestamp.now(),
-            'recentMessage': message,
-            'recentSentBy': FirebaseAuth.instance.currentUser!.uid,
-            'recentIsSeen': false,
-            'usersID': [widget.userID1, widget.userID2],
-            'usersName': [widget.userName1, widget.userName2],
-            'usersImage': [widget.userImage1, widget.userImage2],
-          })
-          .then((value) => docPath = value.id)
-          .onError((error, stackTrace) => 'error');
-      await chatsCollection.doc(docPath).collection('chat').add({
-        'text': message,
-        'createdAt': Timestamp.now(),
-        'senderID': senderID,
-        'senderName': senderName,
-        'senderImage': senderImage,
-      });
-      isPresent = true;
-      Navigator.of(context)
-          .pushReplacement(MaterialPageRoute(builder: (context) {
-        return ChatScreen(
-          userId1: widget.userID1,
-          userName1: widget.userName1,
-          userImage1: widget.userImage1,
-          userName2: widget.userName2,
-          userImage2: widget.userImage2,
-          userId2: widget.userID2,
-          docPath: docPath!,
-        );
-      }));
+      try {
+        await chatsCollection
+            .add({
+              'timestamp': Timestamp.now(),
+              'recentMessage': message,
+              'recentSentBy': FirebaseAuth.instance.currentUser!.uid,
+              'recentIsSeen': false,
+              'usersID': [widget.userID1, widget.userID2],
+              'usersName': [widget.userName1, widget.userName2],
+              'usersImage': [widget.userImage1, widget.userImage2],
+            })
+            .then((value) => docPath = value.id)
+            .onError((error, stackTrace) => 'error');
+        await chatsCollection.doc(docPath).collection('chat').add({
+          'text': message,
+          'createdAt': Timestamp.now(),
+          'senderID': senderID,
+          'senderName': senderName,
+          'senderImage': senderImage,
+        });
+        isPresent = true;
+        Navigator.of(context)
+            .pushReplacement(MaterialPageRoute(builder: (context) {
+          return ChatScreen(
+            userId1: widget.userID1,
+            userName1: widget.userName1,
+            userImage1: widget.userImage1,
+            userName2: widget.userName2,
+            userImage2: widget.userImage2,
+            userId2: widget.userID2,
+            docPath: docPath!,
+          );
+        }));
+      } catch (error) {
+        print('Error: $error');
+      }
     } else {
-      chatsCollection.doc(docPath).update({
-        'timestamp': Timestamp.now(),
-        'recentMessage': message,
-        'recentSentBy': FirebaseAuth.instance.currentUser!.uid,
-        'recentIsSeen': false,
-      });
-      await chatsCollection.doc(docPath).collection('chat').add({
-        'text': message,
-        'createdAt': Timestamp.now(),
-        'senderID': senderID,
-        'senderName': senderName,
-        'senderImage': senderImage,
-      });
+      try {
+        chatsCollection.doc(docPath).update({
+          'timestamp': Timestamp.now(),
+          'recentMessage': message,
+          'recentSentBy': FirebaseAuth.instance.currentUser!.uid,
+          'recentIsSeen': false,
+        });
+        await chatsCollection.doc(docPath).collection('chat').add({
+          'text': message,
+          'createdAt': Timestamp.now(),
+          'senderID': senderID,
+          'senderName': senderName,
+          'senderImage': senderImage,
+        });
+      } catch (e) {
+        print('Error: $e');
+      }
     }
   }
 
