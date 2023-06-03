@@ -1,3 +1,5 @@
+import 'package:chat_app/screen/chat_screen.dart';
+import 'package:chat_app/widgets/chats/messages.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -57,6 +59,7 @@ class _NewMessagesState extends State<NewMessages> {
             'timestamp': Timestamp.now(),
             'recentMessage': message,
             'recentSentBy': FirebaseAuth.instance.currentUser!.uid,
+            'recentIsSeen': false,
             'usersID': [widget.userID1, widget.userID2],
             'usersName': [widget.userName1, widget.userName2],
             'usersImage': [widget.userImage1, widget.userImage2],
@@ -71,11 +74,24 @@ class _NewMessagesState extends State<NewMessages> {
         'senderImage': senderImage,
       });
       isPresent = true;
+      Navigator.of(context)
+          .pushReplacement(MaterialPageRoute(builder: (context) {
+        return ChatScreen(
+          userId1: widget.userID1,
+          userName1: widget.userName1,
+          userImage1: widget.userImage1,
+          userName2: widget.userName2,
+          userImage2: widget.userImage2,
+          userId2: widget.userID2,
+          docPath: docPath!,
+        );
+      }));
     } else {
       chatsCollection.doc(docPath).update({
         'timestamp': Timestamp.now(),
         'recentMessage': message,
         'recentSentBy': FirebaseAuth.instance.currentUser!.uid,
+        'recentIsSeen': false,
       });
       await chatsCollection.doc(docPath).collection('chat').add({
         'text': message,
@@ -88,7 +104,7 @@ class _NewMessagesState extends State<NewMessages> {
   }
 
   final _messageBoxController = TextEditingController();
-  Future<void> sendMessage(String message) async {
+  Future<void> sendMessage(BuildContext context, String message) async {
     final senderID = FirebaseAuth.instance.currentUser!.uid;
     final senderName = await FirebaseFirestore.instance
         .collection('users')
@@ -101,7 +117,6 @@ class _NewMessagesState extends State<NewMessages> {
     await pushMessage(senderName['userName'], senderName['imageUrl'], senderID);
 
     setState(() {
-      // _messageBoxController.clear();
       this.message = "";
     });
   }
@@ -136,7 +151,7 @@ class _NewMessagesState extends State<NewMessages> {
                   setState(() {
                     isSending = true;
                   });
-                  await sendMessage(message);
+                  await sendMessage(context, message);
                   setState(() {
                     isSending = false;
                   });

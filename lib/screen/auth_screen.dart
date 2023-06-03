@@ -127,7 +127,9 @@ class _AuthScreenState extends State<AuthScreen> {
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.primary,
-      body: AuthForm(submitFunction: onSubmit, isLoading: isLoading),
+      body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+          child: AuthForm(submitFunction: onSubmit, isLoading: isLoading)),
     );
   }
 }

@@ -83,7 +83,10 @@ class UsersScreen extends StatelessWidget {
                     backgroundImage: NetworkImage(docs[index]['imageUrl']),
                   ),
                   title: Text(
-                    docs[index]['userName'],
+                    FirebaseAuth.instance.currentUser!.email ==
+                            docs[index]['email']
+                        ? 'You'
+                        : docs[index]['userName'],
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                     ),
