@@ -1,8 +1,11 @@
 import 'package:chat_app/screen/chat_screen.dart';
+import 'package:chat_app/widgets/animations/rive_animation.dart';
 import 'package:chat_app/widgets/chats/messages.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:rive/rive.dart';
 
 class NewMessages extends StatefulWidget {
   NewMessages({
@@ -34,25 +37,59 @@ class _NewMessagesState extends State<NewMessages> {
   QuerySnapshot? snapshot;
   bool isPresent = false;
   String? docPath;
+  Artboard? _riveArtboard;
+  SMIBool? isEyeClosed;
   @override
   void initState() {
     super.initState();
+    // _messageBoxController = TextEditingController();
+
     try {
+      loadRiveFile();
+
       checkIfPresent().then((value) {
         setState(() {
           isPresent = value[1];
           docPath = value[0];
         });
+        // print('$value');
       });
     } catch (error) {
       print('Error: $error');
     }
   }
 
+  Future<void> loadRiveFile() async {
+    final data = await rootBundle.load('assets/teddy.riv');
+    try {
+      final file = RiveFile.import(data);
+      setState(() {
+        _riveArtboard = file.mainArtboard;
+        if (_riveArtboard != null) {
+          var controller = StateMachineController.fromArtboard(
+            _riveArtboard!,
+            'Login Machine',
+          );
+          // print("This: $controller  || ${_riveArtboard}");
+          if (controller != null) {
+            _riveArtboard!.addController(controller);
+            // controller.isActive = true;
+            isEyeClosed = controller.findSMI('isHandsUp');
+          }
+        }
+      });
+    } catch (e) {
+      print('Error loading Rive file: $e');
+    }
+  }
+
   Future<List<dynamic>> checkIfPresent() async {
     snapshot = await chatsCollection.get();
+    print(snapshot!.docs.length);
     users = snapshot!.docs.map((doc) => doc['usersID']).toList();
-    if (snapshot!.docs.isEmpty || users!.isEmpty) {
+    print(users!.length);
+
+    if (snapshot!.docs.isNotEmpty || users!.isNotEmpty) {
       for (var user in users!) {
         if (user.contains(widget.userID1) && user.contains(widget.userID2)) {
           return [snapshot!.docs[users!.indexOf(user)].id, true];
@@ -149,7 +186,30 @@ class _NewMessagesState extends State<NewMessages> {
       padding: const EdgeInsets.all(
         6.0,
       ),
-      child: Row(children: [
+      child: Row(crossAxisAlignment: CrossAxisAlignment.end, children: [
+        // RiveAnimationWidget(),
+        _riveArtboard == null
+            ? Container()
+            : SizedBox(
+                width: 60,
+                height: 60,
+                child: Rive(
+                  artboard: _riveArtboard!,
+                  fit: BoxFit.cover,
+                ),
+              ),
+        // Switch(
+        //     value: isEyeClosed == null ? false : isEyeClosed!.value,
+        //     onChanged: (value) {
+        //       setState(() {
+        //         if (isEyeClosed != null) {
+        //           isEyeClosed!.value = value;
+        //         }
+        //       });
+        //     }),
+        const SizedBox(
+          width: 10.0,
+        ),
         Expanded(
           child: TextField(
             controller: _messageBoxController,
@@ -159,6 +219,11 @@ class _NewMessagesState extends State<NewMessages> {
             onChanged: (val) {
               setState(() {
                 message = val;
+                if (isEyeClosed != null && message.isNotEmpty) {
+                  isEyeClosed!.value = true;
+                } else {
+                  isEyeClosed!.value = false;
+                }
               });
             },
           ),

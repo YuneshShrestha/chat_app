@@ -16,7 +16,7 @@ class ChatBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.all(4),
+      margin: const EdgeInsets.all(1),
       child: Row(
         mainAxisAlignment:
             !isMe ? MainAxisAlignment.start : MainAxisAlignment.end,

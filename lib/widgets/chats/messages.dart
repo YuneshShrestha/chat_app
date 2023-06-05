@@ -2,6 +2,7 @@ import 'package:chat_app/widgets/chats/chat_bubble.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:rive/rive.dart';
 
 class Messages extends StatefulWidget {
   const Messages(
@@ -76,8 +77,11 @@ class _MessagesState extends State<Messages> {
                 child: Text(snapshot.error.toString()),
               );
             } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-              return const Center(
-                child: Text('No chat messages available. Start a new chat.'),
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Text('No chat messages available. Start a new chat.'),
+                ],
               );
             }
 
